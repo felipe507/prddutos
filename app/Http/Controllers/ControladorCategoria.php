@@ -19,7 +19,7 @@ class ControladorCategoria extends Controller
 
     public function index()
     {   $categorias = Categoria::all();
-        return $categorias->toJson();
+        return json_decode($categorias);
     }
 
     /**

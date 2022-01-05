@@ -53,7 +53,7 @@ class ControladorProduto extends Controller
         $prod->preco = $request->input('preco');
         $prod->categoria_id = $request->input('categoria_id');
         $prod->save();
-        return redirect('/produtos');
+        return $prod;
     }
 
     /**
@@ -64,7 +64,11 @@ class ControladorProduto extends Controller
      */
     public function show($id)
     {
-        //
+        $prod = Produto::find($id);
+        if (isset($prod)) {
+            return $prod->toJson();
+        }
+        return response('Produto não encontrado', 404);
     }
 
     /**
@@ -89,17 +93,18 @@ class ControladorProduto extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id) {    
         $prod = Produto::find($id);
-        $prod->nome = $request->input('nome');
-        $prod->estoque = $request->input('estoque');
-        $prod->preco = $request->input('preco');
-        $prod->categoria_id = $request->input('categoria_id');
-        $prod->save();
-        return redirect('/produtos');
+        if (isset($prod)) {
+            $prod->nome = $request->input('nome');
+            $prod->preco = $request->input('preco');
+            $prod->estoque = $request->input('estoque');
+            $prod->categoria_id = $request->input('categoria_id');
+            $prod->save();
+            return json_encode($prod);
+        }
+        return response('Produto não encontrado', 404);         
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -108,10 +113,11 @@ class ControladorProduto extends Controller
      */
     public function destroy($id)
     {
-        $produto = Produto::find($id);
-        if($produto){
-            $produto->delete();
+        $prod = Produto::find($id);
+        if (isset($prod)) {
+            $prod->delete();
+            return response('OK', 200);
         }
-        return redirect('/produtos');
+        return response('Produto não encontrado', 404);
     }
 }
